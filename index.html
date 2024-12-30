@@ -604,23 +604,7 @@
         const newBlogPost = blogFeed.firstElementChild;
         
         // Beğeni butonu için listener
-        newBlogPost.querySelector('.fa-heart').addEventListener('click', function() {
-            const isLoggedIn = localStorage.getItem('userData');
-            if (!isLoggedIn) {
-                alert('Beğeni yapabilmek için giriş yapmalısınız!');
-                return;
-            }
-            
-            this.classList.toggle('fas');
-            this.classList.toggle('far');
-            const countSpan = this.nextElementSibling;
-            let count = parseInt(countSpan.textContent);
-            if (this.classList.contains('fas')) {
-                countSpan.textContent = count + 1;
-            } else {
-                countSpan.textContent = count - 1;
-            }
-        });
+        newBlogPost.querySelector('.fa-heart').addEventListener('click', handleLike);
 
         // Yorum butonu için listener
         newBlogPost.querySelector('.fa-comment').addEventListener('click', function() {
@@ -632,6 +616,9 @@
         newBlogPost.querySelector('.blog-post-content').addEventListener('click', function() {
             openModal(newBlogPost);
         });
+        
+        // Blog yazılarını kaydet
+        saveBlogPosts();
         
         // Formu temizle
         event.target.reset();
@@ -769,12 +756,81 @@
                 `;
             }
         }
+        
+        // Blog yazılarını yükle
+        loadBlogPosts();
     }
 
     // Çıkış yapma fonksiyonu
     function logout() {
         localStorage.removeItem('userData');
         window.location.reload();
+    }
+
+    // Blog yazılarını localStorage'a kaydetme ve yükleme fonksiyonları
+    function saveBlogPosts() {
+        const blogFeed = document.querySelector('.blog-feed');
+        const posts = blogFeed.innerHTML;
+        localStorage.setItem('blogPosts', posts);
+    }
+
+    function loadBlogPosts() {
+        const savedPosts = localStorage.getItem('blogPosts');
+        if (savedPosts) {
+            const blogFeed = document.querySelector('.blog-feed');
+            blogFeed.innerHTML = savedPosts;
+            
+            // Event listener'ları yeniden ekle
+            addEventListenersToPosts();
+        }
+    }
+
+    // Event listener'ları yeniden ekleme fonksiyonu
+    function addEventListenersToPosts() {
+        // Beğeni butonları için
+        document.querySelectorAll('.fa-heart').forEach(heart => {
+            heart.addEventListener('click', handleLike);
+        });
+
+        // Yorum butonları için
+        document.querySelectorAll('.fa-comment').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const post = this.closest('.blog-post');
+                const comments = post.querySelector('.comments-section');
+                comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+
+        // Blog içeriği için modal
+        document.querySelectorAll('.blog-post-content').forEach(post => {
+            post.style.cursor = 'pointer';
+            post.addEventListener('click', function() {
+                const blogPost = this.closest('.blog-post');
+                openModal(blogPost);
+            });
+        });
+    }
+
+    // Beğeni işlemi için ayrı fonksiyon
+    function handleLike() {
+        const isLoggedIn = localStorage.getItem('userData');
+        if (!isLoggedIn) {
+            alert('Beğeni yapabilmek için giriş yapmalısınız!');
+            return;
+        }
+        
+        this.classList.toggle('fas');
+        this.classList.toggle('far');
+        const countSpan = this.nextElementSibling;
+        let count = parseInt(countSpan.textContent);
+        if (this.classList.contains('fas')) {
+            countSpan.textContent = count + 1;
+        } else {
+            countSpan.textContent = count - 1;
+        }
+        
+        // Blog yazılarını kaydet
+        saveBlogPosts();
     }
     </script>
 </body>
