@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Üye Girişi</title>
+    <title>Kullanıcı Profili</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #f92e2e;
             --secondary-color: #e74c3c;
             --accent-color: #f73398;
-            --text-color: #f92e2e;
+            --text-color: #4e4e4e;
             --light-bg: #f5f6fa;
         }
 
@@ -19,29 +19,6 @@
             font-family: 'Times New Roman', Times, serif;
             margin: 0;
             padding: 0;
-        }
-
-        .header-top {
-            background-color: var(--primary-color);
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .social-links {
-            margin-left: 20px;
-        }
-
-        .social-links a {
-            color: white;
-            margin: 0 10px;
-            font-size: 20px;
-            transition: color 0.3s;
-        }
-
-        .social-links a:hover {
-            color: #feb47b;
         }
 
         nav {
@@ -61,124 +38,133 @@
             color: #feb47b;
         }
 
-        .login-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            max-width: 400px;
+        .profile-container {
+            max-width: 800px;
             margin: 50px auto;
-            padding: 30px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        .login-form {
+        .profile-header {
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 20px;
+            padding: 20px;
+            border-bottom: 2px solid #eee;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-weight: bold;
-            color: #333;
-            font-family: Arial, sans-serif;
-        }
-
-        .form-group input {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            border-color: #ff7e5f;
-            outline: none;
-        }
-
-        .error-message {
-            color: #ff0000;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .login-form button {
-            background-color: #feb47b;
-            color: black;
-            padding: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .login-form button:hover {
-            background-color: #ff7e5f;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-            font-family: Arial, sans-serif;
-        }
-
-        .register-link a {
-            color: #ff7e5f;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-
-        .social-login {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }
-
-        .social-login h3 {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .social-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .social-btn {
-            width: 40px;
-            height: 40px;
+        .profile-image {
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
+            background-color: #ddd;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fff;
-            color: #333;
-            text-decoration: none;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 50px;
+            color: #666;
+            position: relative;
         }
 
-        .social-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        .edit-profile-image {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: #feb47b;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .profile-tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-top: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #ff7e5f;
+            border-bottom-color: #ff7e5f;
+        }
+
+        .tab-content {
+            padding: 20px;
+        }
+
+        .comment-list, .favorite-posts {
+            display: none;
+        }
+
+        .comment-list.active, .favorite-posts.active {
+            display: block;
+        }
+
+        .edit-profile-btn {
+            background-color: #feb47b;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .edit-profile-btn:hover {
+            background-color: #ff7e5f;
+        }
+
+        .comment-item, .post-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comment-date, .post-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .header-top {
+            background-color: var(--primary-color);
         }
 
         .auth-btn {
@@ -191,100 +177,121 @@
     </style>
 </head>
 <body>
-    <div class="header-top">
-        <div class="social-links">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
-        </div>
-    </div>
-
     <nav>
         <a href="index.html">Ana Sayfa</a>
         <a href="profil.html">Profilim</a>
         <a href="iletisim.html">İletişim</a>
     </nav>
 
-    <div class="login-container">
-        <h2 style="text-align: center; color: #333; margin-bottom: 30px;">Üye Girişi</h2>
-        <form class="login-form" onsubmit="return handleLogin(event)">
-            <div class="form-group">
-                <label for="email">E-posta:</label>
-                <input type="email" id="email" required>
-                <div id="email-error" class="error-message">Geçerli bir e-posta adresi giriniz.</div>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-image">
+                <i class="fas fa-user"></i>
+                <div class="edit-profile-image">
+                    <i class="fas fa-camera"></i>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Şifre:</label>
-                <input type="password" id="password" required>
-                <div id="password-error" class="error-message">Şifre alanı boş bırakılamaz.</div>
+            <div class="profile-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0;">Kullanıcı Adı</h2>
+                    <button class="edit-profile-btn">Profili Düzenle</button>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Yorum</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">23</div>
+                        <div class="stat-label">Beğeni</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">7</div>
+                        <div class="stat-label">Favori Yazı</div>
+                    </div>
+                </div>
             </div>
-            <button type="submit">Giriş Yap</button>
-        </form>
-        <div class="register-link">
-            <p>Hesabınız yok mu? <a href="kayit.html">Kayıt Olun</a></p>
         </div>
 
-        <div class="social-login">
-            <h3>Sosyal Medya ile Giriş Yap</h3>
-            <div class="social-buttons">
-                <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-btn"><i class="fab fa-google"></i></a>
-                <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+        <div class="profile-tabs">
+            <div class="tab active" onclick="showTab('comments')">Yorumlarım</div>
+            <div class="tab" onclick="showTab('favorites')">Favori Yazılarım</div>
+        </div>
+
+        <div class="tab-content">
+            <div class="comment-list active">
+                <div class="comment-item">
+                    <p>"Harika bir yazı olmuş, teşekkürler!"</p>
+                    <div class="comment-date">Blog Yazısı 1'e - 12 Ocak 2024</div>
+                </div>
+                <div class="comment-item">
+                    <p>"Bu konuda ben de hemfikirim."</p>
+                    <div class="comment-date">Blog Yazısı 2'ye - 10 Ocak 2024</div>
+                </div>
+            </div>
+
+            <div class="favorite-posts">
+                <div class="post-item">
+                    <h3>Blog Yazısı 1</h3>
+                    <div class="post-date">12 Ocak 2024</div>
+                </div>
+                <div class="post-item">
+                    <h3>Blog Yazısı 3</h3>
+                    <div class="post-date">8 Ocak 2024</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-    function handleLogin(event) {
-        event.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+    function showTab(tabName) {
+        // Tüm tabları ve içerikleri gizle
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content > div').forEach(content => content.classList.remove('active'));
 
-        // Hata mesajlarını sıfırla
-        document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-
-        // Basit doğrulama
-        let hasError = false;
-
-        if (!email || !email.includes('@')) {
-            document.getElementById('email-error').style.display = 'block';
-            hasError = true;
+        // Seçilen tabı ve içeriğini göster
+        if (tabName === 'comments') {
+            document.querySelector('.tab:first-child').classList.add('active');
+            document.querySelector('.comment-list').classList.add('active');
+        } else {
+            document.querySelector('.tab:last-child').classList.add('active');
+            document.querySelector('.favorite-posts').classList.add('active');
         }
-
-        if (!password) {
-            document.getElementById('password-error').style.display = 'block';
-            hasError = true;
-        }
-
-        if (hasError) {
-            return false;
-        }
-
-        // Kullanıcı bilgilerini localStorage'a kaydet
-        const userData = {
-            email: email,
-            isLoggedIn: true,
-            username: email.split('@')[0],
-            loginDate: new Date().toLocaleString()
-        };
-        
-        localStorage.setItem('userData', JSON.stringify(userData));
-
-        // Başarılı giriş
-        alert('Giriş başarılı! Profilinize yönlendiriliyorsunuz.');
-        window.location.href = 'index.html';
-        return false;
     }
 
-    // Sayfa yüklendiğinde giriş kontrolü
+    // Profil bilgilerini yükleme fonksiyonu
     window.onload = function() {
         const userData = JSON.parse(localStorage.getItem('userData'));
-        if (userData && userData.isLoggedIn) {
-            window.location.href = 'profil.html';
+        if (!userData || !userData.isLoggedIn) {
+            window.location.href = 'giris.html';
+            return;
         }
+
+        // Kullanıcı adını güncelle
+        document.querySelector('.profile-info h2').textContent = userData.username;
+        
+        // Profil linkini güncelle
+        const profilLink = document.querySelector('nav a[href="profil.html"]');
+        if (profilLink) {
+            profilLink.textContent = userData.username;
+        }
+        
+        // E-posta bilgisini ekle (isteğe bağlı)
+        const emailInfo = document.createElement('p');
+        emailInfo.style.color = '#666';
+        emailInfo.textContent = userData.email;
+        document.querySelector('.profile-info h2').after(emailInfo);
     }
+
+    // Profil düzenleme butonuna tıklandığında
+    document.querySelector('.edit-profile-btn').addEventListener('click', function() {
+        window.location.href = 'profil-duzenle.html';
+    });
+
+    // Profil fotoğrafı değiştirme için - BU KISMI DEĞİŞTİRDİK
+    document.querySelector('.edit-profile-image').addEventListener('click', function() {
+        window.location.href = 'profil-duzenle.html';
+    });
     </script>
 </body>
 </html>

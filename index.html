@@ -544,81 +544,46 @@
     </div>
 
     <script>
+    // Blog gönderilerini temizle
+    document.querySelector('.blog-feed').innerHTML = '';
+
+    // Blog paylaşım fonksiyonunu güncelle
     function shareBlog(event) {
         event.preventDefault();
-        const isLoggedIn = localStorage.getItem('userData');
+        const userData = JSON.parse(localStorage.getItem('userData'));
         
-        if (!isLoggedIn) {
+        if (!userData || !userData.isLoggedIn) {
             alert('Blog paylaşabilmek için giriş yapmalısınız!');
             window.location.href = 'giris.html';
             return false;
         }
 
-        const userData = JSON.parse(isLoggedIn);
         const title = event.target.querySelector('input[type="text"]').value;
         const content = event.target.querySelector('textarea').value;
         const currentDate = new Date();
         
-        // Yeni blog post HTML'i
-        const newPost = `
-            <div class="blog-post">
-                <div class="blog-post-header">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="post-meta">
-                        <div class="post-author">${userData.username}</div>
-                        <div class="post-date">${currentDate.toLocaleString()}</div>
-                    </div>
-                </div>
-                <div class="blog-post-content">
-                    <h2 class="blog-post-title">${title}</h2>
-                    <p class="blog-post-text">${content}</p>
-                </div>
-                <div class="blog-post-footer">
-                    <div class="interaction-buttons">
-                        <div class="interaction-btn">
-                            <i class="far fa-heart"></i>
-                            <span>0</span>
-                        </div>
-                        <div class="interaction-btn">
-                            <i class="far fa-comment"></i>
-                            <span>0</span>
-                        </div>
-                        <div class="interaction-btn">
-                            <i class="far fa-share-square"></i>
-                            <span>0</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="comments-section" style="display: none;">
-                </div>
-            </div>
-        `;
+        const newPost = {
+            id: Date.now(),
+            title: title,
+            content: content,
+            author: userData.username,
+            date: currentDate.toLocaleString(),
+            likes: [],
+            comments: [],
+            favorites: []
+        };
         
-        // Yeni postu en başa ekle
-        const blogFeed = document.querySelector('.blog-feed');
-        blogFeed.insertAdjacentHTML('afterbegin', newPost);
+        // Mevcut blog yazılarını al
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
         
-        // Yeni eklenen posta event listener'ları ekle
-        const newBlogPost = blogFeed.firstElementChild;
-        
-        // Beğeni butonu için listener
-        newBlogPost.querySelector('.fa-heart').addEventListener('click', handleLike);
-
-        // Yorum butonu için listener
-        newBlogPost.querySelector('.fa-comment').addEventListener('click', function() {
-            const comments = newBlogPost.querySelector('.comments-section');
-            comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
-        });
-
-        // Blog içeriği için modal listener
-        newBlogPost.querySelector('.blog-post-content').addEventListener('click', function() {
-            openModal(newBlogPost);
-        });
+        // Yeni yazıyı ekle
+        blogPosts.unshift(newPost);
         
         // Blog yazılarını kaydet
-        saveBlogPosts();
+        localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+        
+        // Sayfayı güncelle
+        displayBlogPosts();
         
         // Formu temizle
         event.target.reset();
@@ -626,129 +591,127 @@
         return false;
     }
 
-    // Yorum göster/gizle fonksiyonu
-    document.querySelectorAll('.interaction-btn').forEach(btn => {
-        if (btn.querySelector('.fa-comment')) {
-            btn.addEventListener('click', function() {
-                const post = this.closest('.blog-post');
-                const comments = post.querySelector('.comments-section');
-                comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
-            });
-        }
-    });
+    // Blog yazılarını görüntüleme fonksiyonu
+    function displayBlogPosts() {
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        const blogFeed = document.querySelector('.blog-feed');
+        blogFeed.innerHTML = '';
+        
+        blogPosts.forEach(post => {
+            const postHTML = `
+                <div class="blog-post" data-post-id="${post.id}">
+                    <div class="blog-post-header">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="post-meta">
+                            <div class="post-author">${post.author}</div>
+                            <div class="post-date">${post.date}</div>
+                        </div>
+                    </div>
+                    <div class="blog-post-content">
+                        <h2 class="blog-post-title">${post.title}</h2>
+                        <p class="blog-post-text">${post.content}</p>
+                    </div>
+                    <div class="blog-post-footer">
+                        <div class="interaction-buttons">
+                            <div class="interaction-btn like-btn">
+                                <i class="far fa-heart"></i>
+                                <span>${post.likes.length}</span>
+                            </div>
+                            <div class="interaction-btn comment-btn">
+                                <i class="far fa-comment"></i>
+                                <span>${post.comments.length}</span>
+                            </div>
+                            <div class="interaction-btn favorite-btn">
+                                <i class="far fa-star"></i>
+                                <span>${post.favorites.length}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comments-section" style="display: none;">
+                        ${post.comments.map(comment => `
+                            <div class="comment">
+                                <strong>${comment.username}:</strong> ${comment.text}
+                                <div class="comment-date">${comment.date}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            blogFeed.insertAdjacentHTML('beforeend', postHTML);
+        });
+        
+        // Event listener'ları ekle
+        addEventListenersToPosts();
+    }
 
-    // Beğeni fonksiyonu
-    document.querySelectorAll('.fa-heart').forEach(heart => {
-        heart.addEventListener('click', function() {
-            const isLoggedIn = localStorage.getItem('userData');
-            if (!isLoggedIn) {
-                alert('Beğeni yapabilmek için giriş yapmalısınız!');
-                return;
+    // Beğeni işlemi için fonksiyon
+    function handleLike(event) {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (!userData || !userData.isLoggedIn) {
+            alert('Beğeni yapabilmek için giriş yapmalısınız!');
+            return;
+        }
+        
+        const postElement = event.target.closest('.blog-post');
+        const postId = postElement.dataset.postId;
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        const post = blogPosts.find(p => p.id.toString() === postId);
+        
+        if (post) {
+            const likeIndex = post.likes.indexOf(userData.username);
+            if (likeIndex === -1) {
+                post.likes.push(userData.username);
+                event.target.classList.add('fas');
+                event.target.classList.remove('far');
+            } else {
+                post.likes.splice(likeIndex, 1);
+                event.target.classList.remove('fas');
+                event.target.classList.add('far');
             }
             
-            this.classList.toggle('fas');
-            this.classList.toggle('far');
-            const countSpan = this.nextElementSibling;
-            let count = parseInt(countSpan.textContent);
-            if (this.classList.contains('fas')) {
-                countSpan.textContent = count + 1;
-            } else {
-                countSpan.textContent = count - 1;
-            }
-        });
-    });
-
-    // Modal işlemleri
-    const modal = document.getElementById('blogModal');
-    const closeModal = document.querySelector('.close-modal');
-
-    // Blog yazısına tıklama olayı
-    document.querySelectorAll('.blog-post-content').forEach(post => {
-        post.style.cursor = 'pointer';
-        post.addEventListener('click', function() {
-            const blogPost = this.closest('.blog-post');
-            openModal(blogPost);
-        });
-    });
-
-    // Modalı açma fonksiyonu
-    function openModal(blogPost) {
-        const title = blogPost.querySelector('.blog-post-title').textContent;
-        const author = blogPost.querySelector('.post-author').textContent;
-        const date = blogPost.querySelector('.post-date').textContent;
-        const content = blogPost.querySelector('.blog-post-text').textContent;
-        
-        modal.querySelector('.modal-title').textContent = title;
-        modal.querySelector('.post-author').textContent = author;
-        modal.querySelector('.post-date').textContent = date;
-        modal.querySelector('.modal-body').textContent = content;
-        
-        // Yorumları göster
-        const comments = blogPost.querySelector('.comments-section').cloneNode(true);
-        modal.querySelector('.comments-list').innerHTML = comments.innerHTML;
-        
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Arka planı kaydırmayı engelle
-    }
-
-    // Modalı kapatma
-    closeModal.onclick = function() {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Arka plan kaydırmayı tekrar etkinleştir
-    }
-
-    // Modal dışına tıklandığında kapatma
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
+            event.target.nextElementSibling.textContent = post.likes.length;
+            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
         }
     }
 
     // Yorum ekleme fonksiyonu
-    function addComment() {
-        const isLoggedIn = localStorage.getItem('userData');
-        if (!isLoggedIn) {
+    function addComment(postId, commentText) {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (!userData || !userData.isLoggedIn) {
             alert('Yorum yapabilmek için giriş yapmalısınız!');
-            window.location.href = 'giris.html';
             return;
         }
-
-        const commentInput = modal.querySelector('.comment-input');
-        const comment = commentInput.value.trim();
         
-        if (comment) {
-            const userData = JSON.parse(isLoggedIn);
-            const commentHTML = `
-                <div class="comment">
-                    <strong>${userData.username}:</strong> ${comment}
-                </div>
-            `;
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        const post = blogPosts.find(p => p.id.toString() === postId);
+        
+        if (post) {
+            const newComment = {
+                username: userData.username,
+                text: commentText,
+                date: new Date().toLocaleString()
+            };
             
-            modal.querySelector('.comments-list').insertAdjacentHTML('beforeend', commentHTML);
-            commentInput.value = '';
+            post.comments.push(newComment);
+            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+            displayBlogPosts();
         }
     }
 
-    // ESC tuşu ile modalı kapatma
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' && modal.style.display === 'block') {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-    });
-
-    // Sayfa yüklendiğinde kullanıcı kontrolü
+    // Sayfa yüklendiğinde
     window.onload = function() {
         const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        
+        // Kullanıcı durumuna göre header'ı güncelle
         if (userData.username) {
-            // Profil linkini güncelle
             const profilLink = document.querySelector('nav a[href="profil.html"]');
             if (profilLink) {
                 profilLink.textContent = userData.username;
             }
             
-            // Giriş/Kayıt butonlarını gizle
             const authLinks = document.querySelector('.auth-links');
             if (authLinks) {
                 authLinks.innerHTML = `
@@ -757,80 +720,8 @@
             }
         }
         
-        // Blog yazılarını yükle
-        loadBlogPosts();
-    }
-
-    // Çıkış yapma fonksiyonu
-    function logout() {
-        localStorage.removeItem('userData');
-        window.location.reload();
-    }
-
-    // Blog yazılarını localStorage'a kaydetme ve yükleme fonksiyonları
-    function saveBlogPosts() {
-        const blogFeed = document.querySelector('.blog-feed');
-        const posts = blogFeed.innerHTML;
-        localStorage.setItem('blogPosts', posts);
-    }
-
-    function loadBlogPosts() {
-        const savedPosts = localStorage.getItem('blogPosts');
-        if (savedPosts) {
-            const blogFeed = document.querySelector('.blog-feed');
-            blogFeed.innerHTML = savedPosts;
-            
-            // Event listener'ları yeniden ekle
-            addEventListenersToPosts();
-        }
-    }
-
-    // Event listener'ları yeniden ekleme fonksiyonu
-    function addEventListenersToPosts() {
-        // Beğeni butonları için
-        document.querySelectorAll('.fa-heart').forEach(heart => {
-            heart.addEventListener('click', handleLike);
-        });
-
-        // Yorum butonları için
-        document.querySelectorAll('.fa-comment').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const post = this.closest('.blog-post');
-                const comments = post.querySelector('.comments-section');
-                comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
-            });
-        });
-
-        // Blog içeriği için modal
-        document.querySelectorAll('.blog-post-content').forEach(post => {
-            post.style.cursor = 'pointer';
-            post.addEventListener('click', function() {
-                const blogPost = this.closest('.blog-post');
-                openModal(blogPost);
-            });
-        });
-    }
-
-    // Beğeni işlemi için ayrı fonksiyon
-    function handleLike() {
-        const isLoggedIn = localStorage.getItem('userData');
-        if (!isLoggedIn) {
-            alert('Beğeni yapabilmek için giriş yapmalısınız!');
-            return;
-        }
-        
-        this.classList.toggle('fas');
-        this.classList.toggle('far');
-        const countSpan = this.nextElementSibling;
-        let count = parseInt(countSpan.textContent);
-        if (this.classList.contains('fas')) {
-            countSpan.textContent = count + 1;
-        } else {
-            countSpan.textContent = count - 1;
-        }
-        
-        // Blog yazılarını kaydet
-        saveBlogPosts();
+        // Blog yazılarını göster
+        displayBlogPosts();
     }
     </script>
 </body>

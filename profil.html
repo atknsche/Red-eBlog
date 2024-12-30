@@ -44,7 +44,7 @@
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(246, 6, 6, 0.847);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
         .profile-header {
@@ -123,7 +123,7 @@
         }
 
         .tab.active {
-            color: #f91e1e;
+            color: #ff7e5f;
             border-bottom-color: #ff7e5f;
         }
 
@@ -259,8 +259,108 @@
         }
     }
 
-        // Profil düzenleme butonu için - BU KISMI DEĞİŞTİRDİK
-        document.querySelector('.edit-profile-btn').addEventListener('click', function() {
+    // Profil bilgilerini yükleme fonksiyonu
+    window.onload = function() {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (!userData || !userData.isLoggedIn) {
+            window.location.href = 'giris.html';
+            return;
+        }
+
+        // Kullanıcı adını güncelle
+        document.querySelector('.profile-info h2').textContent = userData.username;
+        document.querySelector('.profile-header h1').textContent = userData.username;
+        
+        // Profil linkini güncelle
+        const profilLink = document.querySelector('nav a[href="profil.html"]');
+        if (profilLink) {
+            profilLink.textContent = userData.username;
+        }
+
+        // İstatistikleri güncelle
+        updateUserStats();
+        
+        // Yorumları ve favori yazıları güncelle
+        updateUserComments();
+        updateUserFavorites();
+    }
+
+    // Kullanıcı istatistiklerini güncelleme
+    function updateUserStats() {
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        let commentCount = 0;
+        let likeCount = 0;
+        let favoriteCount = 0;
+
+        blogPosts.forEach(post => {
+            if (post.comments) {
+                commentCount += post.comments.length;
+            }
+            if (post.likes) {
+                likeCount += post.likes.length;
+            }
+            if (post.favorites) {
+                favoriteCount += post.favorites.length;
+            }
+        });
+
+        document.querySelector('.stats .comment-count').textContent = commentCount;
+        document.querySelector('.stats .like-count').textContent = likeCount;
+        document.querySelector('.stats .favorite-count').textContent = favoriteCount;
+    }
+
+    // Kullanıcının yorumlarını güncelleme
+    function updateUserComments() {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        const commentList = document.querySelector('.comment-list');
+        commentList.innerHTML = '';
+
+        blogPosts.forEach(post => {
+            if (post.comments) {
+                post.comments.forEach(comment => {
+                    if (comment.username === userData.username) {
+                        const commentItem = document.createElement('div');
+                        commentItem.className = 'comment-item';
+                        commentItem.innerHTML = `
+                            <p>"${comment.text}"</p>
+                            <div class="comment-date">${post.title} - ${comment.date}</div>
+                        `;
+                        commentList.appendChild(commentItem);
+                    }
+                });
+            }
+        });
+    }
+
+    // Kullanıcının favori yazılarını güncelleme
+    function updateUserFavorites() {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        const favoritesList = document.querySelector('.favorite-posts');
+        favoritesList.innerHTML = '';
+
+        blogPosts.forEach(post => {
+            if (post.favorites && post.favorites.includes(userData.username)) {
+                const favoriteItem = document.createElement('div');
+                favoriteItem.className = 'post-item';
+                favoriteItem.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <div class="post-date">${post.date}</div>
+                `;
+                favoritesList.appendChild(favoriteItem);
+            }
+        });
+    }
+
+    // Çıkış yapma fonksiyonu
+    function logout() {
+        localStorage.removeItem('userData');
+        window.location.href = 'index.html';
+    }
+
+    // Profil düzenleme butonuna tıklandığında
+    document.querySelector('.edit-profile-btn').addEventListener('click', function() {
         window.location.href = 'profil-duzenle.html';
     });
 
