@@ -426,9 +426,9 @@
 
     <!-- Blog Paylaşım Formu -->
     <div class="blog-share-container">
-        <form class="blog-share-form" onsubmit="return shareBlog(event)">
-            <input type="text" placeholder="Blog Başlığı" required>
-            <textarea placeholder="Düşüncelerinizi paylaşın..." required></textarea>
+        <form class="blog-share-form" id="blogShareForm">
+            <input type="text" id="blogTitle" placeholder="Blog Başlığı" required>
+            <textarea id="blogContent" placeholder="Düşüncelerinizi paylaşın..." required></textarea>
             <button type="submit" class="share-btn">Paylaş</button>
         </form>
     </div>
@@ -547,19 +547,19 @@
     // Blog gönderilerini temizle
     document.querySelector('.blog-feed').innerHTML = '';
 
-    // Blog paylaşım fonksiyonunu güncelle
-    function shareBlog(event) {
+    // Blog paylaşım formunu dinle
+    document.getElementById('blogShareForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const userData = JSON.parse(localStorage.getItem('userData'));
         
+        const userData = JSON.parse(localStorage.getItem('userData'));
         if (!userData || !userData.isLoggedIn) {
             alert('Blog paylaşabilmek için giriş yapmalısınız!');
             window.location.href = 'giris.html';
-            return false;
+            return;
         }
 
-        const title = event.target.querySelector('input[type="text"]').value;
-        const content = event.target.querySelector('textarea').value;
+        const title = document.getElementById('blogTitle').value;
+        const content = document.getElementById('blogContent').value;
         const currentDate = new Date();
         
         const newPost = {
@@ -581,12 +581,11 @@
         blogPosts.unshift(newPost);
         localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
         
+        this.reset();
         displayBlogPosts();
-        event.target.reset();
         
         alert('Blog paylaşımınız başarıyla yayınlandı!');
-        return false;
-    }
+    });
 
     // Blog yazılarını görüntüleme fonksiyonu
     function displayBlogPosts() {
