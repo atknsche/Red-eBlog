@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Düzenle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #f92e2e;
+            --secondary-color: #e74c3c;
+            --accent-color: #f73398;
+            --text-color: #4e4e4e;
+            --light-bg: #f5f6fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        nav a:hover {
+            color: #feb47b;
+        }
+
+        .edit-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-image-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: #666;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-image:hover::after {
+            content: 'Fotoğrafı Değiştir';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px;
+            font-size: 14px;
+            border-bottom-left-radius: 75px;
+            border-bottom-right-radius: 75px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .social-links-section {
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        .social-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .social-input i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .save-btn {
+            background-color: #feb47b;
+            color: black;
+        }
+
+        .save-btn:hover {
+            background-color: #ff7e5f;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .cancel-btn:hover {
+            background-color: #ccc;
+        }
+
+        .password-section {
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        .header-top {
+            background-color: var(--primary-color);
+        }
+
+        .auth-btn {
+            border: 2px solid var(--accent-color);
+        }
+
+        .auth-btn:hover {
+            background-color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Ana Sayfa</a>
+        <a href="profil.html">Profilim</a>
+        <a href="iletisim.html">İletişim</a>
+    </nav>
+
+    <div class="edit-container">
+        <h2 style="text-align: center; color: #333;">Profil Düzenle</h2>
+        
+        <div class="profile-image-section">
+            <div class="profile-image" onclick="changeProfileImage()">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+
+        <form id="editProfileForm" onsubmit="return saveProfile(event)">
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" id="username" value="Kullanıcı Adı" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" value="ornek@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Hakkımda</label>
+                <textarea id="bio">Kendiniz hakkında kısa bir bilgi yazın...</textarea>
+            </div>
+
+            <div class="social-links-section">
+                <h3>Sosyal Medya Hesapları</h3>
+                <div class="social-input">
+                    <i class="fab fa-facebook"></i>
+                    <input type="url" id="facebook" placeholder="Facebook profil linki">
+                </div>
+                <div class="social-input">
+                    <i class="fab fa-twitter"></i>
+                    <input type="url" id="twitter" placeholder="Twitter profil linki">
+                </div>
+                <div class="social-input">
+                    <i class="fab fa-instagram"></i>
+                    <input type="url" id="instagram" placeholder="Instagram profil linki">
+                </div>
+                <div class="social-input">
+                    <i class="fab fa-linkedin"></i>
+                    <input type="url" id="linkedin" placeholder="LinkedIn profil linki">
+                </div>
+            </div>
+
+            <div class="password-section">
+                <h3>Şifre Değiştir</h3>
+                <div class="form-group">
+                    <label for="currentPassword">Mevcut Şifre</label>
+                    <input type="password" id="currentPassword">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Yeni Şifre</label>
+                    <input type="password" id="newPassword">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Yeni Şifre (Tekrar)</label>
+                    <input type="password" id="confirmPassword">
+                </div>
+            </div>
+
+            <!-- button-group div'inden sonrasını düzeltelim -->
+            <div class="button-group">
+                <button type="button" class="cancel-btn" onclick="window.location.href='profil.html'">İptal</button>
+                <button type="submit" class="save-btn">Kaydet</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function changeProfileImage() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.querySelector('.profile-image').innerHTML = `
+                            <img src="${event.target.result}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            
+            input.click();
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            
+            // Form verilerini al
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const bio = document.getElementById('bio').value;
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Sosyal medya linklerini al
+            const facebook = document.getElementById('facebook').value;
+            const twitter = document.getElementById('twitter').value;
+            const instagram = document.getElementById('instagram').value;
+            const linkedin = document.getElementById('linkedin').value;
+
+            // Basit doğrulama kontrolleri
+            if (!username || !email) {
+                alert('Kullanıcı adı ve e-posta alanları zorunludur!');
+                return false;
+            }
+
+            if (!email.includes('@')) {
+                alert('Lütfen geçerli bir e-posta adresi girin!');
+                return false;
+            }
+
+            // Şifre değişikliği yapılıyorsa kontrol et
+            if (newPassword || confirmPassword) {
+                if (!currentPassword) {
+                    alert('Şifre değiştirmek için mevcut şifrenizi girmelisiniz!');
+                    return false;
+                }
+                if (newPassword !== confirmPassword) {
+                    alert('Yeni şifreler eşleşmiyor!');
+                    return false;
+                }
+                if (newPassword.length < 6) {
+                    alert('Yeni şifre en az 6 karakter olmalıdır!');
+                    return false;
+                }
+            }
+
+            // Tüm bilgileri bir objede topla
+            const profileData = {
+                username,
+                email,
+                bio,
+                socialMedia: {
+                    facebook,
+                    twitter,
+                    instagram,
+                    linkedin
+                },
+                passwordChange: newPassword ? {
+                    currentPassword,
+                    newPassword
+                } : null
+            };
+
+            // Normalde bu veriler bir API'ye gönderilir
+            console.log('Kaydedilen profil bilgileri:', profileData);
+
+            // Başarılı kayıt mesajı
+            const result = confirm('Profil bilgileriniz başarıyla kaydedildi! Profil sayfasına dönmek ister misiniz?');
+            
+            if (result) {
+                window.location.href = 'profil.html';
+            }
+
+            return false;
+        }
+    </script>
+</body>
+</html>

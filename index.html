@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red e-blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #f92e2e;
+            --secondary-color: #e74c3c;
+            --accent-color: #f73398;
+            --text-color: #4e4e4e;
+            --light-bg: #f5f6fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--light-bg);
+        }
+
+        /* Header Styles */
+        .header-top {
+            background-color: var(--primary-color);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .social-links a {
+            color: white;
+            margin: 0 15px;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .auth-links .auth-btn {
+            background-color: transparent;
+            color: white;
+            padding: 8px 20px;
+            border: 2px solid var(--accent-color);
+            border-radius: 25px;
+            text-decoration: none;
+            margin-left: 15px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .auth-links .auth-btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* Navigation */
+        nav {
+            background-color: white;
+            padding: 20px 5%;
+            text-align: center;
+            margin-top: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: 500;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary-color);
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+            margin-bottom: 50px;
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: white;
+            background: none;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Blog Paylaşım Formu */
+        .blog-share-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .blog-share-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .blog-share-form input,
+        .blog-share-form textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .blog-share-form textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .share-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .share-btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* Blog Feed */
+        .blog-feed {
+            max-width: 800px;
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .blog-post {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .blog-post-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .post-meta {
+            flex-grow: 1;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .post-date {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .blog-post-content {
+            padding: 20px;
+        }
+
+        .blog-post-title {
+            font-size: 1.5em;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .blog-post-text {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .interaction-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .interaction-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .interaction-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .comments-section {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            background-color: #f8f9fa;
+        }
+
+        .comment {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                margin-top: 100px;
+            }
+
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .blog-share-container,
+            .blog-feed {
+                margin: 20px 10px;
+            }
+        }
+
+        /* Stil eklemeleri */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--accent-color);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .modal-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        .modal-body {
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .modal-comments {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .comment-form {
+            margin-top: 20px;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .comment-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .comment-btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header-top">
+        <div class="social-links">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+        <div class="auth-links">
+            <a href="giris.html" class="auth-btn">Giriş Yap</a>
+            <a href="kayit.html" class="auth-btn">Üye Ol</a>
+        </div>
+    </div>
+
+    <nav>
+        <a href="index.html">Ana Sayfa</a>
+        <a href="profil.html">Profilim</a>
+        <a href="iletisim.html">İletişim</a>
+    </nav>
+    
+    <section class="hero">
+        <h1>Hoş Geldiniz!</h1>
+        <p>Düşüncelerinizi ve deneyimlerinizi özgürce paylaşabileceğiniz Blog Sayfasına hoş geldiniz.</p>
+    </section>
+
+    <!-- Blog Paylaşım Formu -->
+    <div class="blog-share-container">
+        <form class="blog-share-form" onsubmit="return shareBlog(event)">
+            <input type="text" placeholder="Blog Başlığı" required>
+            <textarea placeholder="Düşüncelerinizi paylaşın..." required></textarea>
+            <button type="submit" class="share-btn">Paylaş</button>
+        </form>
+    </div>
+
+    <!-- Blog Gönderileri -->
+    <div class="blog-feed">
+        <!-- Örnek Blog Gönderisi 1 -->
+        <div class="blog-post">
+            <div class="blog-post-header">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="post-meta">
+                    <div class="post-author">Ahmet Yılmaz</div>
+                    <div class="post-date">2 saat önce</div>
+                </div>
+            </div>
+            <div class="blog-post-content">
+                <h2 class="blog-post-title">Teknolojinin Geleceği</h2>
+                <p class="blog-post-text">Yapay zeka ve robotik teknolojilerinin gelecekte hayatımızı nasıl değiştireceği hakkında düşüncelerimi paylaşmak istiyorum...</p>
+            </div>
+            <div class="blog-post-footer">
+                <div class="interaction-buttons">
+                    <div class="interaction-btn">
+                        <i class="far fa-heart"></i>
+                        <span>123</span>
+                    </div>
+                    <div class="interaction-btn">
+                        <i class="far fa-comment"></i>
+                        <span>45</span>
+                    </div>
+                    <div class="interaction-btn">
+                        <i class="far fa-share-square"></i>
+                        <span>12</span>
+                    </div>
+                </div>
+            </div>
+            <div class="comments-section" style="display: none;">
+                <div class="comment">
+                    <strong>Mehmet:</strong> Harika bir yazı olmuş!
+                </div>
+                <div class="comment">
+                    <strong>Ayşe:</strong> Ben de aynı şekilde düşünüyorum.
+                </div>
+            </div>
+        </div>
+
+        <!-- Örnek Blog Gönderisi 2 -->
+        <div class="blog-post">
+            <div class="blog-post-header">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="post-meta">
+                    <div class="post-author">Zeynep Kaya</div>
+                    <div class="post-date">5 saat önce</div>
+                </div>
+            </div>
+            <div class="blog-post-content">
+                <h2 class="blog-post-title">Sürdürülebilir Yaşam</h2>
+                <p class="blog-post-text">Günümüzde sürdürülebilir yaşamın önemi ve günlük hayatımızda yapabileceğimiz küçük değişiklikler hakkında...</p>
+            </div>
+            <div class="blog-post-footer">
+                <div class="interaction-buttons">
+                    <div class="interaction-btn">
+                        <i class="far fa-heart"></i>
+                        <span>89</span>
+                    </div>
+                    <div class="interaction-btn">
+                        <i class="far fa-comment"></i>
+                        <span>34</span>
+                    </div>
+                    <div class="interaction-btn">
+                        <i class="far fa-share-square"></i>
+                        <span>8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="comments-section" style="display: none;">
+                <div class="comment">
+                    <strong>Ali:</strong> Çok faydalı bilgiler!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="blogModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h2 class="modal-title"></h2>
+                <div class="modal-meta">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="post-author"></div>
+                        <div class="post-date"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-comments">
+                <h3>Yorumlar</h3>
+                <div class="comments-list"></div>
+                <div class="comment-form">
+                    <textarea class="comment-input" placeholder="Yorumunuzu yazın..." rows="3"></textarea>
+                    <button class="comment-btn" onclick="addComment()">Yorum Yap</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function shareBlog(event) {
+        event.preventDefault();
+        const isLoggedIn = localStorage.getItem('userData');
+        
+        if (!isLoggedIn) {
+            alert('Blog paylaşabilmek için giriş yapmalısınız!');
+            window.location.href = 'giris.html';
+            return false;
+        }
+
+        // Blog paylaşım işlemleri burada yapılacak
+        alert('Blog paylaşımınız başarıyla yayınlandı!');
+        event.target.reset();
+        return false;
+    }
+
+    // Yorum göster/gizle fonksiyonu
+    document.querySelectorAll('.interaction-btn').forEach(btn => {
+        if (btn.querySelector('.fa-comment')) {
+            btn.addEventListener('click', function() {
+                const post = this.closest('.blog-post');
+                const comments = post.querySelector('.comments-section');
+                comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+    });
+
+    // Beğeni fonksiyonu
+    document.querySelectorAll('.fa-heart').forEach(heart => {
+        heart.addEventListener('click', function() {
+            const isLoggedIn = localStorage.getItem('userData');
+            if (!isLoggedIn) {
+                alert('Beğeni yapabilmek için giriş yapmalısınız!');
+                return;
+            }
+            
+            this.classList.toggle('fas');
+            this.classList.toggle('far');
+            const countSpan = this.nextElementSibling;
+            let count = parseInt(countSpan.textContent);
+            if (this.classList.contains('fas')) {
+                countSpan.textContent = count + 1;
+            } else {
+                countSpan.textContent = count - 1;
+            }
+        });
+    });
+
+    // Modal işlemleri
+    const modal = document.getElementById('blogModal');
+    const closeModal = document.querySelector('.close-modal');
+
+    // Blog yazısına tıklama olayı
+    document.querySelectorAll('.blog-post-content').forEach(post => {
+        post.style.cursor = 'pointer';
+        post.addEventListener('click', function() {
+            const blogPost = this.closest('.blog-post');
+            openModal(blogPost);
+        });
+    });
+
+    // Modalı açma fonksiyonu
+    function openModal(blogPost) {
+        const title = blogPost.querySelector('.blog-post-title').textContent;
+        const author = blogPost.querySelector('.post-author').textContent;
+        const date = blogPost.querySelector('.post-date').textContent;
+        const content = blogPost.querySelector('.blog-post-text').textContent;
+        
+        modal.querySelector('.modal-title').textContent = title;
+        modal.querySelector('.post-author').textContent = author;
+        modal.querySelector('.post-date').textContent = date;
+        modal.querySelector('.modal-body').textContent = content;
+        
+        // Yorumları göster
+        const comments = blogPost.querySelector('.comments-section').cloneNode(true);
+        modal.querySelector('.comments-list').innerHTML = comments.innerHTML;
+        
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Arka planı kaydırmayı engelle
+    }
+
+    // Modalı kapatma
+    closeModal.onclick = function() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Arka plan kaydırmayı tekrar etkinleştir
+    }
+
+    // Modal dışına tıklandığında kapatma
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Yorum ekleme fonksiyonu
+    function addComment() {
+        const isLoggedIn = localStorage.getItem('userData');
+        if (!isLoggedIn) {
+            alert('Yorum yapabilmek için giriş yapmalısınız!');
+            window.location.href = 'giris.html';
+            return;
+        }
+
+        const commentInput = modal.querySelector('.comment-input');
+        const comment = commentInput.value.trim();
+        
+        if (comment) {
+            const userData = JSON.parse(isLoggedIn);
+            const commentHTML = `
+                <div class="comment">
+                    <strong>${userData.username}:</strong> ${comment}
+                </div>
+            `;
+            
+            modal.querySelector('.comments-list').insertAdjacentHTML('beforeend', commentHTML);
+            commentInput.value = '';
+        }
+    }
+
+    // ESC tuşu ile modalı kapatma
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+    </script>
+</body>
+</html>
