@@ -573,27 +573,28 @@
             favorites: []
         };
         
-        // Mevcut blog yazılarını al
-        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        let blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        if (!Array.isArray(blogPosts)) {
+            blogPosts = [];
+        }
         
-        // Yeni yazıyı ekle
         blogPosts.unshift(newPost);
-        
-        // Blog yazılarını kaydet
         localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
         
-        // Sayfayı güncelle
         displayBlogPosts();
-        
-        // Formu temizle
         event.target.reset();
+        
         alert('Blog paylaşımınız başarıyla yayınlandı!');
         return false;
     }
 
     // Blog yazılarını görüntüleme fonksiyonu
     function displayBlogPosts() {
-        const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        let blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        if (!Array.isArray(blogPosts)) {
+            blogPosts = [];
+        }
+        
         const blogFeed = document.querySelector('.blog-feed');
         blogFeed.innerHTML = '';
         
@@ -617,25 +618,25 @@
                         <div class="interaction-buttons">
                             <div class="interaction-btn like-btn">
                                 <i class="far fa-heart"></i>
-                                <span>${post.likes.length}</span>
+                                <span>${post.likes ? post.likes.length : 0}</span>
                             </div>
                             <div class="interaction-btn comment-btn">
                                 <i class="far fa-comment"></i>
-                                <span>${post.comments.length}</span>
+                                <span>${post.comments ? post.comments.length : 0}</span>
                             </div>
                             <div class="interaction-btn favorite-btn">
                                 <i class="far fa-star"></i>
-                                <span>${post.favorites.length}</span>
+                                <span>${post.favorites ? post.favorites.length : 0}</span>
                             </div>
                         </div>
                     </div>
                     <div class="comments-section" style="display: none;">
-                        ${post.comments.map(comment => `
+                        ${post.comments ? post.comments.map(comment => `
                             <div class="comment">
                                 <strong>${comment.username}:</strong> ${comment.text}
                                 <div class="comment-date">${comment.date}</div>
                             </div>
-                        `).join('')}
+                        `).join('') : ''}
                     </div>
                 </div>
             `;
@@ -643,7 +644,6 @@
             blogFeed.insertAdjacentHTML('beforeend', postHTML);
         });
         
-        // Event listener'ları ekle
         addEventListenersToPosts();
     }
 
@@ -705,7 +705,6 @@
     window.onload = function() {
         const userData = JSON.parse(localStorage.getItem('userData') || '{}');
         
-        // Kullanıcı durumuna göre header'ı güncelle
         if (userData.username) {
             const profilLink = document.querySelector('nav a[href="profil.html"]');
             if (profilLink) {
@@ -719,6 +718,9 @@
                 `;
             }
         }
+        
+        // Örnek blog gönderilerini temizle
+        document.querySelector('.blog-feed').innerHTML = '';
         
         // Blog yazılarını göster
         displayBlogPosts();
@@ -807,7 +809,7 @@
     });
 
     // Modal içinden yorum ekleme
-    document.querySelector('.comment-btn').onclick = function() {
+    document.querySelector('.modal .comment-btn').onclick = function() {
         const postId = modal.dataset.postId;
         const commentInput = modal.querySelector('.comment-input');
         const commentText = commentInput.value.trim();
@@ -815,18 +817,6 @@
         if (commentText) {
             addComment(postId, commentText);
             commentInput.value = '';
-            
-            // Modalı güncelle
-            const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-            const post = blogPosts.find(p => p.id.toString() === postId);
-            if (post && post.comments) {
-                modal.querySelector('.comments-list').innerHTML = post.comments.map(comment => `
-                    <div class="comment">
-                        <strong>${comment.username}:</strong> ${comment.text}
-                        <div class="comment-date">${comment.date}</div>
-                    </div>
-                `).join('');
-            }
         }
     }
 
