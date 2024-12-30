@@ -554,9 +554,88 @@
             return false;
         }
 
-        // Blog paylaşım işlemleri burada yapılacak
-        alert('Blog paylaşımınız başarıyla yayınlandı!');
+        const userData = JSON.parse(isLoggedIn);
+        const title = event.target.querySelector('input[type="text"]').value;
+        const content = event.target.querySelector('textarea').value;
+        const currentDate = new Date();
+        
+        // Yeni blog post HTML'i
+        const newPost = `
+            <div class="blog-post">
+                <div class="blog-post-header">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="post-meta">
+                        <div class="post-author">${userData.username}</div>
+                        <div class="post-date">${currentDate.toLocaleString()}</div>
+                    </div>
+                </div>
+                <div class="blog-post-content">
+                    <h2 class="blog-post-title">${title}</h2>
+                    <p class="blog-post-text">${content}</p>
+                </div>
+                <div class="blog-post-footer">
+                    <div class="interaction-buttons">
+                        <div class="interaction-btn">
+                            <i class="far fa-heart"></i>
+                            <span>0</span>
+                        </div>
+                        <div class="interaction-btn">
+                            <i class="far fa-comment"></i>
+                            <span>0</span>
+                        </div>
+                        <div class="interaction-btn">
+                            <i class="far fa-share-square"></i>
+                            <span>0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="comments-section" style="display: none;">
+                </div>
+            </div>
+        `;
+        
+        // Yeni postu en başa ekle
+        const blogFeed = document.querySelector('.blog-feed');
+        blogFeed.insertAdjacentHTML('afterbegin', newPost);
+        
+        // Yeni eklenen posta event listener'ları ekle
+        const newBlogPost = blogFeed.firstElementChild;
+        
+        // Beğeni butonu için listener
+        newBlogPost.querySelector('.fa-heart').addEventListener('click', function() {
+            const isLoggedIn = localStorage.getItem('userData');
+            if (!isLoggedIn) {
+                alert('Beğeni yapabilmek için giriş yapmalısınız!');
+                return;
+            }
+            
+            this.classList.toggle('fas');
+            this.classList.toggle('far');
+            const countSpan = this.nextElementSibling;
+            let count = parseInt(countSpan.textContent);
+            if (this.classList.contains('fas')) {
+                countSpan.textContent = count + 1;
+            } else {
+                countSpan.textContent = count - 1;
+            }
+        });
+
+        // Yorum butonu için listener
+        newBlogPost.querySelector('.fa-comment').addEventListener('click', function() {
+            const comments = newBlogPost.querySelector('.comments-section');
+            comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Blog içeriği için modal listener
+        newBlogPost.querySelector('.blog-post-content').addEventListener('click', function() {
+            openModal(newBlogPost);
+        });
+        
+        // Formu temizle
         event.target.reset();
+        alert('Blog paylaşımınız başarıyla yayınlandı!');
         return false;
     }
 
@@ -671,6 +750,32 @@
             document.body.style.overflow = 'auto';
         }
     });
+
+    // Sayfa yüklendiğinde kullanıcı kontrolü
+    window.onload = function() {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        if (userData.username) {
+            // Profil linkini güncelle
+            const profilLink = document.querySelector('nav a[href="profil.html"]');
+            if (profilLink) {
+                profilLink.textContent = userData.username;
+            }
+            
+            // Giriş/Kayıt butonlarını gizle
+            const authLinks = document.querySelector('.auth-links');
+            if (authLinks) {
+                authLinks.innerHTML = `
+                    <a href="#" class="auth-btn" onclick="logout()">Çıkış Yap</a>
+                `;
+            }
+        }
+    }
+
+    // Çıkış yapma fonksiyonu
+    function logout() {
+        localStorage.removeItem('userData');
+        window.location.reload();
+    }
     </script>
 </body>
 </html>
